@@ -3,18 +3,24 @@ FROM ubuntu:16.04
 LABEL maintainer="Oleg Kulyk" \
       description="Ubuntu 16.04, development base image" \
       run="docker run -it --rm -v $(pwd):/home/phantom/app eleidan/base:ubuntu-16.04" \
-      version="2018-05-30"
+      version="2018-06-21"
 
 ARG CUSTOM_USER="phantom"
-ENV SERVICE_NAME="base:ubuntu-16.04" \
-    GOSU_VERSION="1.10"
+ARG CUSTOM_USER_ID="1000"
+ENV CONTAINER_USER=${CUSTOM_USER}
+ENV SERVICE_NAME="base:ubuntu-16.04"
 ENV CONTAINER_PS1="[ $(get_container_ip) | \[\e[0;36m\]$(get_container_service)\[\e[m\] | \[\e[0;35m\]\w\[\e[m\] ]\n\[\e[1;32m\]>\[\e[m\] "
 
+COPY .profile .bashrc /etc/skel/
+COPY .profile .bashrc /root/
 
-COPY .profile .bashrc .bash_history /etc/skel/
-COPY .profile .bashrc .bash_history /root/
+ENV HOME=/home/${CONTAINER_USER}
 
-COPY docker-entrypoint.sh /
+RUN useradd -m -s /bin/bash -u $CUSTOM_USER_ID $CONTAINER_USER \
+    && mkdir ${HOME}/bash-history/ \
+    && touch ${HOME}/bash-history/.bash_history
+
+WORKDIR $HOME
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         autoconf \
@@ -52,9 +58,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libyaml-dev \
         make \
         patch \
+        procps \
         wget \
         xz-utils \
         zlib1g-dev \
+        bzr \
+        git \
+        mercurial \
+        openssh-client \
+        subversion \
     && rm -rf /var/lib/apt/lists/*
 
 RUN set -ex; \
@@ -67,37 +79,6 @@ RUN set -ex; \
       rm -rf /var/lib/apt/lists/*; \
     fi
 
-
-################################################################################
-# SCM
-################################################################################
-RUN apt-get update && apt-get install -y --no-install-recommends \
-        bzr \
-        git \
-        mercurial \
-        openssh-client \
-        subversion \
-        \
-        procps \
-&& rm -rf /var/lib/apt/lists/*
-
-
-################################################################################
-# GOSU
-################################################################################
-RUN dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
-    && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch" \
-    && wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch.asc" \
-    && export GNUPGHOME="$(mktemp -d)" \
-    && gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 \
-    && gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu \
-    && rm -r "$GNUPGHOME" /usr/local/bin/gosu.asc \
-    && chmod +x /usr/local/bin/gosu \
-    && gosu nobody true \
-    && useradd -m -s /bin/bash -u 1000 $CUSTOM_USER \
-    && chmod a+x /docker-entrypoint.sh
-
-
-ENTRYPOINT ["/docker-entrypoint.sh"]
+RUN chown ${CONTAINER_USER}:${CONTAINER_USER} -R ${HOME}
 
 CMD ["/bin/bash"]
