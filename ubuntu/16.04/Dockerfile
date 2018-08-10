@@ -3,7 +3,7 @@ FROM ubuntu:16.04
 LABEL maintainer="Oleg Kulyk" \
       description="Ubuntu 16.04, development base image" \
       run="docker run -it --rm -v $(pwd):/home/phantom/app eleidan/base:ubuntu-16.04" \
-      version="2018-06-21"
+      version="2018-08-10"
 
 ARG CUSTOM_USER="phantom"
 ARG CUSTOM_USER_ID="1000"
@@ -22,7 +22,7 @@ RUN useradd -m -s /bin/bash -u $CUSTOM_USER_ID $CONTAINER_USER \
 
 WORKDIR $HOME
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
         autoconf \
         automake \
         bash-completion \
@@ -67,6 +67,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         mercurial \
         openssh-client \
         subversion \
+        sudo \
     && rm -rf /var/lib/apt/lists/*
 
 RUN set -ex; \
@@ -80,5 +81,6 @@ RUN set -ex; \
     fi
 
 RUN chown ${CONTAINER_USER}:${CONTAINER_USER} -R ${HOME}
+RUN echo "phantom ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/phantom
 
 CMD ["/bin/bash"]
