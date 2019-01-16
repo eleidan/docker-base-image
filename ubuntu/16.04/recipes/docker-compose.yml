@@ -1,0 +1,13 @@
+version: '2.2'
+
+volumes:
+  bash-history:
+
+services:
+  dev:
+    build: .
+    image: app
+    user: phantom
+    volumes:
+      - .:/home/phantom/app
+      - bash-history:/home/phantom/bash-history
