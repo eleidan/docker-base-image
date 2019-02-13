@@ -7,7 +7,7 @@ ARG HOST_UID=1000
 ARG HOST_GID=1000
 RUN usermod -u ${HOST_UID} phantom
 RUN groupmod -g ${HOST_GID} phantom
-RUN chown phantom:phantom ${HOME}
+RUN chown -R phantom:phantom ${HOME}
 
 USER phantom
 WORKDIR ${HOME}/app
