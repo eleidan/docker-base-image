@@ -57,6 +57,7 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-reco
         patch \
         procps \
         tzdata \
+        unzip \
         wget \
         xz-utils \
         zlib1g-dev \
