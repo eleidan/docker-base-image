@@ -9,6 +9,7 @@ LABEL maintainer="Oleg Kulyk" \
 ENV SERVICE_NAME="base:ubuntu-16.04"
 ENV CONTAINER_PS1="[ $(get_container_ip) | \[\e[0;36m\]$(get_container_service)\[\e[m\] | \[\e[0;35m\]\w\[\e[m\] ]\n\[\e[1;32m\]>\[\e[m\] "
 ENV HOME=/home/phantom
+ARG DEBIAN_FRONTEND=noninteractive
 
 COPY .profile .bashrc /etc/skel/
 COPY .profile .bashrc /root/
