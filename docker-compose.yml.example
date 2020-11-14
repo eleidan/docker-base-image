@@ -1,0 +1,13 @@
+version: '2'
+
+volumes:
+  bash-history:
+
+services:
+  dev:
+    image: eleidan/base:draft
+    build:
+      context: ./ubuntu/16.04
+    user: phantom
+    volumes:
+      - bash-history:/home/phantom/bash-history
