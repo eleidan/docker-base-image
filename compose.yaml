@@ -1,0 +1,5 @@
+services:
+  ubuntu:
+    image: eleidan/base:ubuntu-20.04
+    build:
+      context: ./ubuntu/20.04
