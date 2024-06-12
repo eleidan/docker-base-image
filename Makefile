@@ -2,4 +2,4 @@ build:
 	docker compose build ubuntu
 
 push:
-	docker push eleidan/base:ubuntu-20.04
+	docker push eleidan/base:ubuntu-24.04

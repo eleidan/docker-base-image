@@ -1,5 +1,5 @@
 services:
   ubuntu:
-    image: eleidan/base:ubuntu-20.04
+    image: eleidan/base:ubuntu-24.04
     build:
-      context: ./ubuntu/20.04
+      context: ./ubuntu/24.04
